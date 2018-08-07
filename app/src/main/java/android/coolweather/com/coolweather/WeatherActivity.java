@@ -8,11 +8,14 @@ import android.coolweather.com.coolweather.util.Utility;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -30,7 +33,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
-    private SwipeRefreshLayout refreshLayout;
+    public SwipeRefreshLayout refreshLayout;
+    public DrawerLayout drawerLayout;
+    private Button navButton;
     private String mWeatherId;
     private ImageView bingPicImage;
     private ScrollView weatherLayout;
@@ -55,6 +60,8 @@ public class WeatherActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_weather);
         //初始化各控件
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navButton = findViewById(R.id.nav_button);
         refreshLayout = findViewById(R.id.swip_refresh);
         weatherLayout = findViewById(R.id.weather_layout);
         titleCity = findViewById(R.id.title_city);
@@ -95,13 +102,19 @@ public class WeatherActivity extends AppCompatActivity {
                 requestWeather(mWeatherId);
             }
         });
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
     }
 
     /**
      * 从服务器请求必应每日一图
      */
-    private void loadBingPic() {
+    public void loadBingPic() {
         String bingPicUrl = "http://guolin.tech/api/bing_pic";
         HttpUtil.sendOkHttpRequest(bingPicUrl, new Callback() {
             @Override
@@ -129,7 +142,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id查询城市天气信息
      * @param weatherId
      */
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         String weatherUrl = "http://guolin.tech/api/weather?cityid="+weatherId+"&key=a2eda742b217492b8900d46d9c04020a";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
 
@@ -172,7 +185,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 处理并展示Weather实体类中的数据
      * @param weather
      */
-    private void showWeatherInfo(Weather weather) {
+    public void showWeatherInfo(Weather weather) {
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature+"℃";
